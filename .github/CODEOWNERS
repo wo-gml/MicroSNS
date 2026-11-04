@@ -1,0 +1,5 @@
+# 폴더별 자동 리뷰어. 주석을 풀고 github-id를 실제 GitHub 아이디로 바꾸세요.
+# /db/       @github-id
+# /docs/     @github-id
+# /backend/  @github-id
+# /frontend/ @github-id

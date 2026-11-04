@@ -1,0 +1,16 @@
+# 비밀 정보
+.env
+.env.local
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+
+# OS
+.DS_Store
