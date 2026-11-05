@@ -33,6 +33,100 @@
   padding: 0;
 }
 
+/* 모집 */
+.recruitment {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px var(--gutter);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.recruitment-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.recruitment-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.recruitment-note {
+  color: var(--color-text-secondary);
+}
+
+.recruitment-note a {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.application {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.application-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.application-actions {
+  flex: none;
+  display: flex;
+  gap: 8px;
+}
+
+.application-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.application-input {
+  width: 100%;
+  padding: 8px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-background);
+  line-height: 22px;
+  resize: vertical;
+}
+
+.application-input:focus {
+  outline: 0;
+  border-color: var(--color-text);
+}
+
+.application-form .inline-error {
+  align-self: flex-start;
+}
+
+.my-application {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.my-application-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
 /* 댓글 */
 .comment-composer {
   display: flex;
@@ -42,19 +136,10 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.comment-composer--reply {
-  padding: 8px 0 0;
-  border-bottom: 0;
-}
-
 .comment-composer-row {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.comment-composer--reply .comment-composer-row {
-  gap: 8px;
 }
 
 .comment-input {
@@ -89,8 +174,6 @@
   align-items: flex-start;
   gap: 12px;
   padding: 12px var(--gutter);
-  /* 답글은 아바타와 간격만큼 들여씁니다. */
-  padding-left: calc(var(--gutter) + var(--depth, 0) * 52px);
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -106,9 +189,5 @@
 @media (max-width: 760px) {
   .post-detail .media {
     height: 220px;
-  }
-
-  .comment {
-    padding-left: calc(var(--gutter) + var(--depth, 0) * 24px);
   }
 }

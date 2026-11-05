@@ -62,6 +62,7 @@ img {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
   color: inherit;
@@ -307,6 +308,35 @@ a.name:hover {
   border: 1px solid var(--color-border);
   border-radius: 12px;
   object-fit: cover;
+}
+
+/* 모집 정보 한 줄 */
+.recruitment-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.recruitment-summary .meta {
+  white-space: normal;
+}
+
+.recruitment-status {
+  flex: none;
+  padding: 1px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.recruitment-status--open {
+  border-color: var(--color-text);
+  background: var(--color-text);
+  color: var(--color-text-inverse);
 }
 
 .post-actions {

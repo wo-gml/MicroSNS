@@ -9,6 +9,7 @@ import type { Post } from "@/api/types";
 import Avatar from "@/components/Avatar";
 import Icon from "@/components/Icon";
 import LikeButton from "@/components/LikeButton";
+import RecruitmentSummary from "@/components/RecruitmentSummary";
 import { PostText } from "@/components/RichText";
 import { useAuth } from "@/hooks/useAuth";
 import { formatFullDate, formatRelativeTime } from "@/lib/format";
@@ -100,6 +101,7 @@ export default function PostCard(props: PostCardProps) {
         </header>
         <PostText content={post.content} />
         <PostMedia post={post} />
+        {post.recruitment && <RecruitmentSummary recruitment={post.recruitment} />}
         <PostActions {...props} />
       </div>
     </article>

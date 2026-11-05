@@ -23,6 +23,7 @@ function TextField({
   autoComplete,
   helper,
   minLength,
+  maxLength,
   required = true,
   multiline = false,
   value,
@@ -36,6 +37,7 @@ function TextField({
   autoComplete?: string;
   helper?: string;
   minLength?: number;
+  maxLength?: number;
   required?: boolean;
   multiline?: boolean;
   value: string;
@@ -46,6 +48,7 @@ function TextField({
     id: name,
     name,
     placeholder,
+    maxLength,
     required,
     value,
     "aria-invalid": error ? true : undefined,
@@ -139,6 +142,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
           type="email"
           placeholder="이메일을 입력하세요"
           autoComplete="email"
+          maxLength={255}
           value={email}
           error={fieldMessage(fieldErrors, "email")}
           onChange={setEmail}
@@ -149,6 +153,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
             name="name"
             placeholder="이름을 입력하세요"
             autoComplete="name"
+            maxLength={50}
             value={name}
             error={fieldMessage(fieldErrors, "name")}
             onChange={setName}
@@ -184,6 +189,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
               placeholder="어떤 스터디나 프로젝트에 관심이 있나요?"
               required={false}
               multiline
+              maxLength={200}
               value={bio}
               error={fieldMessage(fieldErrors, "bio")}
               onChange={setBio}

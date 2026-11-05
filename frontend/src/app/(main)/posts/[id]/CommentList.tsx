@@ -1,7 +1,7 @@
-// 댓글 목록, 답글 들여쓰기
+// 댓글 목록
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { toApiError } from "@/api/client";
 import { createComment, deleteComment, getComments, MAX_COMMENT_LENGTH } from "@/api/comments";
@@ -13,46 +13,16 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePagedList } from "@/hooks/usePagedList";
 import { formatFullDate, formatRelativeTime } from "@/lib/format";
 
-type CommentRow = { comment: Comment; depth: number };
-
-const MAX_INDENT_DEPTH = 3;
-
-// 답글이 부모 바로 아래에 오도록 정렬하고 깊이를 계산합니다.
-function toRows(comments: Comment[]) {
-  const ids = new Set(comments.map((comment) => comment.id));
-  const children = new Map<number | null, Comment[]>();
-  for (const comment of comments) {
-    // 부모가 삭제된 답글은 맨 위 단계로 표시합니다.
-    const parent = comment.parent_id !== null && ids.has(comment.parent_id) ? comment.parent_id : null;
-    children.set(parent, [...(children.get(parent) ?? []), comment]);
-  }
-  const rows: CommentRow[] = [];
-  const visit = (parent: number | null, depth: number) => {
-    for (const comment of children.get(parent) ?? []) {
-      rows.push({ comment, depth });
-      visit(comment.id, depth + 1);
-    }
-  };
-  visit(null, 0);
-  return rows;
-}
+const PLACEHOLDER = "댓글을 입력하세요";
 
 function CommentComposer({
   postId,
-  parentId,
   user,
-  placeholder,
-  autoFocus = false,
   onCreated,
-  onCancel,
 }: {
   postId: number;
-  parentId: number | null;
-  user?: UserSummary; // 있으면 시안의 댓글 입력 줄처럼 아바타를 표시합니다.
-  placeholder: string;
-  autoFocus?: boolean;
+  user: UserSummary;
   onCreated: (comment: Comment) => void;
-  onCancel?: () => void;
 }) {
   const [content, setContent] = useState("");
   const [pending, setPending] = useState(false);
@@ -64,7 +34,7 @@ function CommentComposer({
     setPending(true);
     setError(null);
     try {
-      onCreated(await createComment(postId, content.trim(), parentId));
+      onCreated(await createComment(postId, content.trim()));
       setContent("");
     } catch (caught) {
       setError(toApiError(caught).message);
@@ -74,23 +44,17 @@ function CommentComposer({
   }
 
   return (
-    <form className={`comment-composer${user ? "" : " comment-composer--reply"}`} onSubmit={handleSubmit}>
+    <form className="comment-composer" onSubmit={handleSubmit}>
       <div className="comment-composer-row">
-        {user && <Avatar user={user} />}
+        <Avatar user={user} />
         <input
           className="comment-input"
-          aria-label={placeholder}
-          placeholder={placeholder}
+          aria-label={PLACEHOLDER}
+          placeholder={PLACEHOLDER}
           maxLength={MAX_COMMENT_LENGTH}
-          autoFocus={autoFocus}
           value={content}
           onChange={(event) => setContent(event.target.value)}
         />
-        {onCancel && (
-          <button className="button" type="button" onClick={onCancel}>
-            취소
-          </button>
-        )}
         <button className="button button--primary" type="submit" disabled={pending}>
           {pending ? "등록 중…" : "등록"}
         </button>
@@ -105,19 +69,13 @@ function CommentComposer({
 }
 
 function CommentItem({
-  row: { comment, depth },
-  replying,
-  onReply,
-  onCreated,
+  comment,
   onDelete,
 }: {
-  row: CommentRow;
-  replying: boolean;
-  onReply: (id: number | null) => void;
-  onCreated: (comment: Comment) => void;
+  comment: Comment;
   onDelete: (id: number) => Promise<void>;
 }) {
-  const { status, user } = useAuth();
+  const { user } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
   async function handleDelete() {
@@ -131,10 +89,7 @@ function CommentItem({
   }
 
   return (
-    <li
-      className="comment"
-      style={{ "--depth": Math.min(depth, MAX_INDENT_DEPTH) } as React.CSSProperties}
-    >
+    <li className="comment">
       <Avatar user={comment.author} />
       <div className="comment-main">
         <header className="post-meta">
@@ -144,11 +99,6 @@ function CommentItem({
           <time className="meta" dateTime={comment.created_at} title={formatFullDate(comment.created_at)}>
             {formatRelativeTime(comment.created_at)}
           </time>
-          {status === "authenticated" && (
-            <button className="text-button" type="button" onClick={() => onReply(comment.id)}>
-              답글
-            </button>
-          )}
           {user?.id === comment.author.id && (
             <button className="text-button" type="button" onClick={handleDelete}>
               삭제
@@ -162,19 +112,6 @@ function CommentItem({
           <p className="inline-error" role="alert">
             {error}
           </p>
-        )}
-        {replying && (
-          <CommentComposer
-            postId={comment.post_id}
-            parentId={comment.id}
-            autoFocus
-            placeholder={`${comment.author.name}님에게 답글 입력`}
-            onCreated={(reply) => {
-              onCreated(reply);
-              onReply(null);
-            }}
-            onCancel={() => onReply(null)}
-          />
         )}
       </div>
     </li>
@@ -190,31 +127,22 @@ export default function CommentList({
 }) {
   const { status, user } = useAuth();
   const list = usePagedList<Comment>((page) => getComments(postId, page));
-  const [replyingTo, setReplyingTo] = useState<number | null>(null);
-  const rows = useMemo(() => toRows(list.items), [list.items]);
 
   function handleCreated(comment: Comment) {
     list.appendItem(comment);
     onChanged();
   }
 
-  // 답글까지 함께 지워질 수 있으므로 서버 기준으로 다시 받습니다.
   async function handleDelete(id: number) {
     await deleteComment(id);
-    await list.reload();
+    list.removeItem(id);
     onChanged();
   }
 
   return (
     <section aria-label="댓글">
       {user ? (
-        <CommentComposer
-          postId={postId}
-          parentId={null}
-          user={user}
-          placeholder="댓글을 입력하세요"
-          onCreated={handleCreated}
-        />
+        <CommentComposer postId={postId} user={user} onCreated={handleCreated} />
       ) : (
         status !== "loading" && (
           <p className="comment-login">
@@ -233,15 +161,8 @@ export default function CommentList({
       {list.status === "ready" && list.items.length > 0 && (
         <>
           <ul>
-            {rows.map((row) => (
-              <CommentItem
-                key={row.comment.id}
-                row={row}
-                replying={replyingTo === row.comment.id}
-                onReply={setReplyingTo}
-                onCreated={handleCreated}
-                onDelete={handleDelete}
-              />
+            {list.items.map((comment) => (
+              <CommentItem key={comment.id} comment={comment} onDelete={handleDelete} />
             ))}
           </ul>
           <ListFooter

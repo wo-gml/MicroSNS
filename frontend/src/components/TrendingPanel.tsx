@@ -14,9 +14,9 @@ export default function TrendingPanel() {
   return (
     <section className="trending" aria-labelledby="trending-title">
       <h2 id="trending-title">인기 해시태그</h2>
-      {data?.map(({ tag, post_count }) => (
-        <Link className="trending-row" key={tag} href={`/hashtags/${encodeURIComponent(tag)}`}>
-          <span className="trending-tag">#{tag}</span>
+      {data?.map(({ name, post_count }) => (
+        <Link className="trending-row" key={name} href={`/hashtags/${encodeURIComponent(name)}`}>
+          <span className="trending-tag">#{name}</span>
           <span className="meta">{post_count}개의 글</span>
         </Link>
       ))}

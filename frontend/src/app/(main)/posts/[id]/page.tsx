@@ -1,4 +1,4 @@
-// 글 + 댓글 + 답글
+// 글 + 모집 + 댓글
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";

@@ -6,7 +6,7 @@ import {
   markNotificationRead,
   NOTIFICATIONS_CHANGED_EVENT,
 } from "@/api/notifications";
-import type { Notification, NotificationType } from "@/api/types";
+import type { Notification } from "@/api/types";
 import Avatar from "@/components/Avatar";
 import Icon from "@/components/Icon";
 import { EmptyState, ErrorState, ListFooter, LoadingState } from "@/components/States";
@@ -14,13 +14,6 @@ import { refreshAuth } from "@/hooks/useAuth";
 import { usePagedList } from "@/hooks/usePagedList";
 import { useRequireLogin } from "@/hooks/useRequireLogin";
 import { formatFullDate, formatRelativeTime } from "@/lib/format";
-
-const MESSAGES: Record<NotificationType, string> = {
-  like: "님이 회원님의 글을 좋아합니다.",
-  comment: "님이 회원님의 글에 댓글을 남겼습니다.",
-  reply: "님이 회원님의 댓글에 답글을 남겼습니다.",
-  follow: "님이 회원님을 팔로우하기 시작했습니다.",
-};
 
 function NotificationList() {
   const list = usePagedList<Notification>(getNotifications);
@@ -54,10 +47,7 @@ function NotificationList() {
               <Avatar user={item.actor} />
               <span className="notification-main">
                 <span className="notification-line">
-                  <span>
-                    <strong>{item.actor.name}</strong>
-                    {MESSAGES[item.type]}
-                  </span>
+                  <span>{item.content}</span>
                   <span className="notification-meta">
                     <time className="meta" dateTime={item.created_at} title={formatFullDate(item.created_at)}>
                       {formatRelativeTime(item.created_at)}
@@ -70,7 +60,6 @@ function NotificationList() {
                     )}
                   </span>
                 </span>
-                {item.preview && <span className="notification-preview">{item.preview}</span>}
               </span>
             </Link>
           </li>

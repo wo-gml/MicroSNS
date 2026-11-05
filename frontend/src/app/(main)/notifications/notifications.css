@@ -12,10 +12,6 @@
   background: var(--color-surface);
 }
 
-.notification:hover strong {
-  text-decoration: underline;
-}
-
 .notification-main {
   flex: 1;
   min-width: 0;
@@ -31,22 +27,11 @@
   gap: 12px;
 }
 
-.notification-line strong {
-  font-weight: 700;
-}
-
 .notification-meta {
   flex: none;
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.notification-preview {
-  overflow: hidden;
-  color: var(--color-text-secondary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* 모바일 */

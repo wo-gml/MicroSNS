@@ -1,8 +1,9 @@
 // 게시글 API 호출 함수
 import { apiFetch } from "./client";
+import type { RecruitmentInput } from "./recruitments";
 import type { Page, PageParams, Post } from "./types";
 
-export const MAX_POST_LENGTH = 280;
+export const MAX_POST_LENGTH = 500; // post.content varchar(500)
 export const MAX_POST_IMAGES = 2;
 
 export function getFeed(page: PageParams) {
@@ -13,10 +14,11 @@ export function getPost(id: number) {
   return apiFetch<Post>(`/posts/${id}`);
 }
 
-export function createPost(content: string, imageUrls: string[]) {
+// 글과 모집 정보가 함께 저장되도록 한 요청으로 보냅니다.
+export function createPost(content: string, imageUrls: string[], recruitment: RecruitmentInput | null) {
   return apiFetch<Post>("/posts", {
     method: "POST",
-    body: { content, image_urls: imageUrls },
+    body: { content, image_urls: imageUrls, recruitment },
   });
 }
 

@@ -25,6 +25,16 @@ export function formatYearMonth(value: string) {
   return new Date(value).toLocaleDateString("ko-KR", { year: "numeric", month: "long" });
 }
 
+// 예: 11월 12일 오후 6:00
+export function formatDeadline(value: string) {
+  return new Date(value).toLocaleString("ko-KR", {
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 // URL의 id가 숫자가 아니면 null을 돌려줍니다.
 export function parseId(value: string | string[] | undefined) {
   const id = Number(value);

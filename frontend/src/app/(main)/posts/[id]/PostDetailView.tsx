@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { getPost } from "@/api/posts";
 import CommentList from "./CommentList";
 import PostDetailCard from "./PostDetailCard";
+import RecruitmentPanel from "./RecruitmentPanel";
 import { EmptyState, ErrorState, LoadingState } from "@/components/States";
 import { useResource } from "@/hooks/useResource";
 import { parseId } from "@/lib/format";
@@ -17,6 +18,14 @@ function PostDetail({ id }: { id: number }) {
   return (
     <>
       <PostDetailCard post={post} onChange={setData} onDeleted={() => router.replace("/")} />
+      {post.recruitment && (
+        <RecruitmentPanel
+          recruitment={post.recruitment}
+          postId={id}
+          authorId={post.author.id}
+          onChanged={reload}
+        />
+      )}
       <CommentList key={id} postId={id} onChanged={reload} />
     </>
   );
