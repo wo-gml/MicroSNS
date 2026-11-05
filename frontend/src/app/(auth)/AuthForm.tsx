@@ -134,7 +134,8 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
   }`;
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit}>
+    // 스크립트가 로드되기 전에 제출돼도 비밀번호가 주소창에 남지 않도록 POST로 지정합니다.
+    <form className="auth-form" method="post" onSubmit={handleSubmit}>
       <div className="auth-fields">
         <TextField
           label="이메일"

@@ -7,7 +7,7 @@ import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const SAMPLE_ACCOUNT = { email: "minjun@example.com", password: "test1234" };
+export const SAMPLE_ACCOUNT = { email: "admin@test.com", password: "test1234" };
 
 const PHOTOS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "photos");
 const HOUR = 60;
