@@ -1,0 +1,430 @@
+/* 색상과 글자 스타일은 Figma 시안의 변수(color/*, Title/*, Body/* 등)와 같습니다. */
+:root {
+  color-scheme: light;
+
+  --color-text: #111111;
+  --color-text-secondary: #666666;
+  --color-text-inverse: #ffffff;
+  --color-background: #ffffff;
+  --color-surface: #f5f5f5;
+  --color-border: #e6e6e6;
+  --color-danger: #c62828; /* 시안에 없는 에러 표시용 */
+
+  --gutter: 24px;
+  --nav-width: 254px;
+  --aside-width: 316px;
+  --main-width: 640px;
+  --bottom-nav-height: 58px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable; /* 목록이 로드되며 스크롤바가 생겨도 레이아웃이 밀리지 않게 합니다. */
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-noto-sans-kr), "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-size: 15px;
+  line-height: 22px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+h1,
+h2,
+p,
+ul {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 1;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.icon {
+  flex: none;
+}
+
+.meta {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.name {
+  position: relative;
+  z-index: 1;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+a.name:hover {
+  text-decoration: underline;
+}
+
+.inline-error {
+  color: var(--color-danger);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* 제목 줄 */
+.page-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px var(--gutter);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-background);
+}
+
+.page-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  letter-spacing: -0.2px;
+}
+
+/* 버튼 */
+.button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  white-space: nowrap;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--color-surface);
+}
+
+.button:disabled {
+  opacity: 0.6;
+}
+
+.button--primary {
+  padding: 7px 16px;
+  border: 0;
+  background: var(--color-text);
+  color: var(--color-text-inverse);
+}
+
+.button--primary:hover:not(:disabled) {
+  background: var(--color-text);
+  opacity: 0.85;
+}
+
+.button--wide {
+  width: 100%;
+}
+
+.button--large {
+  width: 100%;
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+
+.icon-button {
+  position: relative;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+/* 작은 아이콘도 누르기 쉽도록 터치 영역을 넓힙니다. */
+.icon-button::before,
+.action::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+
+.text-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.text-button:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+/* 아바타 */
+.avatar {
+  position: relative;
+  flex: none;
+  display: block;
+  overflow: hidden;
+  border-radius: 999px;
+}
+
+.avatar img {
+  position: absolute;
+  width: 444.44%;
+  height: 248.06%;
+  max-width: none;
+}
+
+/* 게시글 */
+.post {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px var(--gutter);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* 카드 전체를 덮는 상세 링크. 내부 링크와 버튼은 그 위로 올립니다. */
+.post-link {
+  position: absolute;
+  inset: 0;
+}
+
+.post-link:focus-visible {
+  outline-offset: -2px;
+}
+
+.post-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 6px;
+}
+
+.post-text {
+  white-space: pre-wrap;
+}
+
+.post-tags {
+  font-weight: 500;
+}
+
+.hashtag {
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
+}
+
+.hashtag:hover {
+  text-decoration: underline;
+}
+
+.media {
+  display: flex;
+  gap: 6px;
+  height: 312px;
+  padding: 6px 0 2px;
+}
+
+.media img {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.post-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 20px;
+  padding-top: 8px;
+}
+
+.action {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.action--active {
+  color: var(--color-text);
+}
+
+.post-delete {
+  position: relative;
+  z-index: 1;
+  margin-left: auto;
+}
+
+/* 상태 화면 */
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px var(--gutter);
+  text-align: center;
+}
+
+.state-title {
+  font-weight: 500;
+}
+
+.state-hint {
+  margin-top: -6px;
+  color: var(--color-text-secondary);
+}
+
+.list-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px var(--gutter);
+}
+
+.skeleton-row {
+  display: flex;
+  gap: 12px;
+  padding: 12px var(--gutter);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding-top: 4px;
+}
+
+.skeleton {
+  display: block;
+  height: 11px;
+  border-radius: 6px;
+  background: var(--color-surface);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton--circle {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton--short {
+  width: 28%;
+}
+
+.skeleton--medium {
+  width: 62%;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 760px) {
+  :root {
+    --gutter: 16px;
+  }
+
+  .media {
+    height: 240px;
+  }
+}
