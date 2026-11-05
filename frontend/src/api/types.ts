@@ -1,5 +1,5 @@
-// 백엔드 라우터가 아직 없어 직접 작성한 타입입니다.
-// 라우터가 완성되면 openapi-typescript로 생성한 파일로 교체합니다.
+// backend/app/schemas의 응답 형식과 맞춘 타입입니다.
+// 나중에 openapi-typescript로 생성한 파일로 교체할 수 있습니다.
 
 // backend/app/pagination.py의 PageResponse
 export type Page<T> = {
@@ -54,7 +54,7 @@ export type Comment = {
   created_at: string;
 };
 
-// ERD 이미지에 enum 값이 보이지 않아 임시로 정한 값입니다. 스키마가 나오면 맞춥니다.
+// 백엔드 스키마와 같은 값입니다. DB 스키마를 확정할 때 함께 맞춥니다.
 export type RecruitmentType = "study" | "project";
 export type RecruitmentStatus = "open" | "closed";
 export type ApplicationStatus = "pending" | "accepted" | "rejected";

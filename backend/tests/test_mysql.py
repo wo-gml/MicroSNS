@@ -40,7 +40,7 @@ def client(db):
     def add(email: str, conn: DbConn):
         return {"id": add_member(conn, email)}
 
-    @router.post("/posts")
+    @router.post("/test-posts")
     def add_post(member_id: int, content: str, conn: DbConn):
         execute(
             conn,
@@ -193,7 +193,7 @@ def test_duplicate_row_returns_409(client):
 
 
 def test_missing_foreign_key_target_returns_404(client):
-    response = client.post("/posts", params={"member_id": 999, "content": "hi"})
+    response = client.post("/test-posts", params={"member_id": 999, "content": "hi"})
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "NOT_FOUND"
 
@@ -206,7 +206,7 @@ def test_check_constraint_returns_400(client):
 
 def test_too_long_value_returns_400(client, db):
     member_id = add_member(db)
-    response = client.post("/posts", params={"member_id": member_id, "content": "x" * 11})
+    response = client.post("/test-posts", params={"member_id": member_id, "content": "x" * 11})
     assert response.status_code == 400
 
 

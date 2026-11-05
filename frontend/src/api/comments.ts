@@ -4,7 +4,7 @@ import type { Comment, Page, PageParams } from "./types";
 
 export const MAX_COMMENT_LENGTH = 300; // comment.content varchar(300)
 
-// 작성 시각 오름차순이라고 가정합니다.
+// 작성 시각 오름차순입니다.
 export function getComments(postId: number, page: PageParams) {
   return apiFetch<Page<Comment>>(`/posts/${postId}/comments`, { query: page });
 }

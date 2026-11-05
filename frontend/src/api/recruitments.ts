@@ -1,4 +1,4 @@
-// 모집/지원 API 호출 함수. 백엔드 라우터가 아직 없어 경로는 임시로 정했습니다.
+// 모집/지원 API 호출 함수
 import { apiFetch } from "./client";
 import type {
   Application,
