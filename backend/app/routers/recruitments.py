@@ -133,3 +133,7 @@ def cancel_application(application_id: int, user: LoginUser):
     if application["status"] != "pending":
         raise ConflictError("이미 처리된 지원은 취소할 수 없습니다.")
     store.delete_application(application_id)
+    recruitment = _get_recruitment(application["recruitment_id"])
+    store.retract_notification(
+        _author_id(recruitment), "application", user.id, recruitment["post_id"]
+    )

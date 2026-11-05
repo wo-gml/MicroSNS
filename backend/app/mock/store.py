@@ -118,8 +118,13 @@ def follow(follower_id: int, following_id: int) -> bool:
     return True
 
 
-def unfollow(follower_id: int, following_id: int) -> None:
-    state.follows.discard((follower_id, following_id))
+def unfollow(follower_id: int, following_id: int) -> bool:
+    """팔로우를 취소했으면 True, 팔로우 중이 아니었으면 False입니다."""
+    key = (follower_id, following_id)
+    if key not in state.follows:
+        return False
+    state.follows.remove(key)
+    return True
 
 
 # 게시글
@@ -245,8 +250,12 @@ def like(post: dict, member_id: int) -> bool:
     return True
 
 
-def unlike(post: dict, member_id: int) -> None:
-    post["liked_by"].discard(member_id)
+def unlike(post: dict, member_id: int) -> bool:
+    """좋아요를 취소했으면 True, 좋아요한 적이 없으면 False입니다."""
+    if member_id not in post["liked_by"]:
+        return False
+    post["liked_by"].remove(member_id)
+    return True
 
 
 # 댓글
@@ -417,6 +426,20 @@ def notify(
             "created_at": _now(),
         }
     )
+
+
+def retract_notification(user_id: int, type: str, actor_id: int, post_id: Optional[int]) -> None:
+    """행동을 취소하면 그 행동으로 생긴 알림을 지웁니다. 가장 최근의 한 건만 지웁니다."""
+    matches = [
+        n
+        for n in state.notifications
+        if n["user_id"] == user_id
+        and n["type"] == type
+        and n["actor_id"] == actor_id
+        and n["post_id"] == post_id
+    ]
+    if matches:
+        state.notifications.remove(_newest_first(matches)[0])
 
 
 def list_notifications(user_id: int, limit: int, offset: int) -> List[dict]:

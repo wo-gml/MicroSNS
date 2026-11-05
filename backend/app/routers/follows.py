@@ -33,7 +33,8 @@ def follow_user(user_id: int, user: LoginUser):
 @router.delete("/follow", status_code=204, summary="언팔로우", responses=errors(401, 404, 422))
 def unfollow_user(user_id: int, user: LoginUser):
     _require_user(user_id)
-    store.unfollow(user.id, user_id)
+    if store.unfollow(user.id, user_id):
+        store.retract_notification(user_id, "follow", user.id, None)
 
 
 @router.get(

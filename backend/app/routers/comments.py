@@ -58,3 +58,5 @@ def delete_comment(comment_id: int, user: LoginUser):
     if comment["author_id"] != user.id:
         raise ForbiddenError()
     store.delete_comment(comment_id)
+    post = store.find_post(comment["post_id"])
+    store.retract_notification(post["author_id"], "comment", user.id, post["id"])

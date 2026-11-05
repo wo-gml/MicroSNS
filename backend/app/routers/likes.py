@@ -30,4 +30,6 @@ def like_post(post_id: int, user: LoginUser):
 
 @router.delete("", status_code=204, summary="좋아요 취소", responses=errors(401, 404, 422))
 def unlike_post(post_id: int, user: LoginUser):
-    store.unlike(_get_post(post_id), user.id)
+    post = _get_post(post_id)
+    if store.unlike(post, user.id):
+        store.retract_notification(post["author_id"], "like", user.id, post_id)

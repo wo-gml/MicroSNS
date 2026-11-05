@@ -160,6 +160,57 @@ def test_like_is_idempotent_and_notifies_once(client):
     assert client.get("/posts/2").json()["like_count"] == before
 
 
+def notification_types(client, member_id):
+    login_as(client, member_id)
+    return [n["type"] for n in client.get("/notifications").json()["items"]]
+
+
+def test_repeating_like_keeps_one_notification(client):
+    for _ in range(3):
+        client.post("/posts/2/like")
+        client.delete("/posts/2/like")
+    assert notification_types(client, 8) == []
+
+    login_as(client, 2)
+    client.post("/posts/2/like")
+    assert notification_types(client, 8) == ["like"]
+
+
+def test_unlike_without_like_keeps_other_notifications(client):
+    client.post("/posts/2/like")
+    login_as(client, 3)
+    assert client.delete("/posts/2/like").status_code == 204
+    assert notification_types(client, 8) == ["like"]
+
+
+def test_repeating_follow_keeps_one_notification(client):
+    for _ in range(3):
+        client.post("/users/3/follow")
+        client.delete("/users/3/follow")
+    client.post("/users/3/follow")
+    assert notification_types(client, 3) == ["follow"]
+
+
+def test_deleting_comment_removes_only_its_notification(client):
+    first = client.post("/posts/2/comments", json={"content": "첫 댓글"}).json()
+    client.post("/posts/2/comments", json={"content": "둘째 댓글"})
+    assert notification_types(client, 8) == ["comment", "comment"]
+
+    login_as(client, 2)
+    client.delete(f"/comments/{first['id']}")
+    assert notification_types(client, 8) == ["comment"]
+
+
+def test_canceling_application_removes_notification(client):
+    created = client.post("/recruitments/1/applications", json={}).json()
+    assert notification_types(client, 1) == ["application"]
+
+    login_as(client, 2)
+    client.delete(f"/applications/{created['id']}")
+    client.post("/recruitments/1/applications", json={})
+    assert notification_types(client, 1) == ["application"]
+
+
 def test_comment_flow_and_delete_permission(client):
     created = client.post("/posts/1/comments", json={"content": "참여할게요"})
     assert created.status_code == 201
