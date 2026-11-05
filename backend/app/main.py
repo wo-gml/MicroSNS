@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.errors import register_error_handlers
@@ -14,9 +15,17 @@ async def lifespan(_: FastAPI):
 
 
 def create_app() -> FastAPI:
-    # CORS 설정은 두지 않습니다. 브라우저는 Next.js 프록시를 통해 같은 출처로 호출합니다.
     app = FastAPI(title="microSNS API", lifespan=lifespan)
     register_error_handlers(app)
+    # 프론트엔드는 Next.js 프록시(같은 출처)로 호출하므로 이 설정은 백엔드를 직접 호출할 때만 쓰입니다.
+    # 쿠키 인증을 쓰므로 출처를 와일드카드로 열지 않습니다.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=get_settings().cors_origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PATCH", "DELETE"],
+        allow_headers=["Content-Type"],
+    )
     app.include_router(health.router)
     return app
 

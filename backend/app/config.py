@@ -24,6 +24,9 @@ class Settings(BaseSettings):
 
     cookie_secure: bool = False
 
+    # 브라우저가 백엔드를 직접 호출할 수 있는 출처. .env에서는 JSON 배열로 씁니다.
+    cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
 
 @lru_cache
 def get_settings() -> Settings:

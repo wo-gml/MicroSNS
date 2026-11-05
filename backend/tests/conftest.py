@@ -18,6 +18,7 @@ os.environ.update(
     JWT_SECRET="test-only-secret-" * 3,
     JWT_EXPIRE_MINUTES="60",
     COOKIE_SECURE="false",
+    CORS_ORIGINS='["http://localhost:3000"]',
 )
 
 import pymysql  # noqa: E402
