@@ -12,7 +12,7 @@ from typing import Optional
 import pymysql
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 logger = logging.getLogger(__name__)
@@ -136,9 +136,19 @@ async def _handle_unexpected_error(_: Request, exc: Exception) -> JSONResponse:
     return _error_response(500, "INTERNAL_ERROR", "서버 오류가 발생했습니다.")
 
 
+async def _catch_unexpected_error(request: Request, call_next) -> Response:
+    # Exception 처리기로 등록하면 CORS 미들웨어 바깥에서 실행되어 500 응답에 CORS 헤더가 빠지고,
+    # 브라우저는 실제 에러 대신 CORS 오류를 보여줍니다. 그래서 미들웨어로 안쪽에서 잡습니다.
+    try:
+        return await call_next(request)
+    except Exception as exc:
+        return await _handle_unexpected_error(request, exc)
+
+
 def register_error_handlers(app: FastAPI) -> None:
+    """CORS 미들웨어보다 먼저 호출해야 합니다. 나중에 추가한 미들웨어가 바깥쪽에 놓입니다."""
     app.add_exception_handler(AppError, _handle_app_error)
     app.add_exception_handler(StarletteHTTPException, _handle_http_error)
     app.add_exception_handler(RequestValidationError, _handle_validation_error)
     app.add_exception_handler(pymysql.MySQLError, _handle_mysql_error)
-    app.add_exception_handler(Exception, _handle_unexpected_error)
+    app.middleware("http")(_catch_unexpected_error)

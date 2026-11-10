@@ -1,0 +1,128 @@
+/* 홈 피드 */
+
+/* 글 작성 */
+.composer {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px var(--gutter);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.composer-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.composer-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.composer-input {
+  flex: 1;
+  min-width: 0;
+  max-height: 220px;
+  padding: 9px 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  line-height: 22px;
+  resize: none;
+  field-sizing: content; /* 입력한 줄 수만큼 높이가 늘어납니다. */
+}
+
+.composer-footer {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 40px;
+}
+
+.composer-recruitment {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.composer-field {
+  flex: 1 1 140px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.composer-control {
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-background);
+}
+
+.composer-control:focus {
+  outline: 0;
+  border-color: var(--color-text);
+}
+
+.composer-previews {
+  display: flex;
+  gap: 6px;
+  height: 160px;
+}
+
+.composer-preview {
+  position: relative;
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.composer-preview img {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.preview-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-text);
+  color: var(--color-text-inverse);
+  line-height: 24px;
+}
+
+/* 모바일 */
+@media (max-width: 760px) {
+  .composer-row {
+    flex-wrap: wrap;
+  }
+
+  .composer-input {
+    flex-basis: 100%;
+  }
+
+  .composer-footer {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

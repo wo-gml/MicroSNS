@@ -5,6 +5,7 @@ MySQL 테스트는 TEST_DB_USER를 지정했을 때만 실행되며 microsns_tes
 """
 
 import os
+import tempfile
 
 TEST_DB_NAME = "microsns_test"
 
@@ -18,6 +19,8 @@ os.environ.update(
     JWT_SECRET="test-only-secret-" * 3,
     JWT_EXPIRE_MINUTES="60",
     COOKIE_SECURE="false",
+    CORS_ORIGINS='["http://localhost:3000"]',
+    UPLOAD_DIR=tempfile.mkdtemp(prefix="microsns-test-uploads-"),
 )
 
 import pymysql  # noqa: E402

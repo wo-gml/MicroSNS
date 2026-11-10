@@ -1,0 +1,193 @@
+/* 글 상세 */
+
+.post-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px var(--gutter) 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.post-author .name {
+  flex: 1;
+  min-width: 0;
+}
+
+.post-detail .post-text {
+  font-size: 17px;
+  line-height: 26px;
+}
+
+.post-detail .post-actions {
+  padding-top: 2px;
+}
+
+.post-detail .media {
+  height: 333px;
+  padding: 0;
+}
+
+/* 모집 */
+.recruitment {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px var(--gutter);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.recruitment-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.recruitment-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.recruitment-note {
+  color: var(--color-text-secondary);
+}
+
+.recruitment-note a {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.application {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.application-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.application-actions {
+  flex: none;
+  display: flex;
+  gap: 8px;
+}
+
+.application-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.application-input {
+  width: 100%;
+  padding: 8px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-background);
+  line-height: 22px;
+  resize: vertical;
+}
+
+.application-input:focus {
+  outline: 0;
+  border-color: var(--color-text);
+}
+
+.application-form .inline-error {
+  align-self: flex-start;
+}
+
+.my-application {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.my-application-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+/* 댓글 */
+.comment-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px var(--gutter);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.comment-composer-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.comment-input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-background);
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.comment-input:focus {
+  outline: 0;
+  border-color: var(--color-text);
+}
+
+.comment-login {
+  padding: 12px var(--gutter);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.comment-login a {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px var(--gutter);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.comment-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* 모바일 */
+@media (max-width: 760px) {
+  .post-detail .media {
+    height: 220px;
+  }
+}
