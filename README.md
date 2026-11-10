@@ -28,7 +28,7 @@ SQL은 모두 `db/`에 둡니다.
 
 | 위치 | 내용 |
 | --- | --- |
-| `db/01_schema.sql` | 테이블, 제약 조건, 인덱스 (ERD: `docs/erd/`) |
+| `db/01_schema.sql` | 테이블, 제약 조건, 인덱스 (ERD: [`docs/erd/erd.png`](docs/erd/erd.png)) |
 | `db/seed/<테이블 영역>.sql` | 예시 데이터. 테이블 담당자가 파일을 나눠 관리합니다. 예: `db/seed/members.sql`, `db/seed/posts.sql` |
 
 실행 순서는 [`backend/README.md`](backend/README.md)의 실행 1단계를 따릅니다.
