@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Response
 
 from app.errors import ConflictError, UnauthorizedError
-from app.mock import store
-from app.mock.deps import LoginUser
+from app.deps import DbConn, LoginUser
+from app.repositories import user_repo
 from app.schemas.error import errors
 from app.schemas.user import CurrentUser, LoginRequest, SignupRequest
 from app.security import (
@@ -24,10 +24,10 @@ router = APIRouter(prefix="/auth", tags=["인증"])
     description="가입과 동시에 로그인 쿠키를 심습니다.",
     responses=errors(409, 422),
 )
-def signup(body: SignupRequest, response: Response):
-    if store.find_user_by_email(body.email):
+def signup(body: SignupRequest, response: Response, db: DbConn):
+    if user_repo.find_by_email(db, body.email):
         raise ConflictError("이미 가입된 이메일입니다.")
-    user = store.create_user(body.email, hash_password(body.password), body.name, body.bio or None)
+    user = user_repo.create(db, body.email, hash_password(body.password), body.name, body.bio or None)
     set_auth_cookie(response, create_access_token(user["id"]))
     return user
 
@@ -39,8 +39,8 @@ def signup(body: SignupRequest, response: Response):
     description="성공하면 httpOnly 쿠키 `access_token`을 심습니다.",
     responses=errors(401, 422),
 )
-def login(body: LoginRequest, response: Response):
-    user = store.find_user_by_email(body.email)
+def login(body: LoginRequest, response: Response, db: DbConn):
+    user = user_repo.find_by_email(db, body.email)
     if not user or not verify_password(body.password, user["password_hash"]):
         raise UnauthorizedError("이메일 또는 비밀번호가 올바르지 않습니다.")
     set_auth_cookie(response, create_access_token(user["id"]))

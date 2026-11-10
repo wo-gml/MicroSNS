@@ -14,13 +14,50 @@
 """
 
 from contextlib import contextmanager
-from typing import Iterator
+from datetime import datetime, timedelta, timezone
+from functools import lru_cache
+from typing import Iterator, List, Sequence
 
 import pymysql
+from pymysql import converters
 from pymysql.connections import Connection
+from pymysql.constants import FIELD_TYPE
 from pymysql.cursors import DictCursor
 
 from app.config import get_settings
+
+
+def db_timezone() -> timezone:
+    """DB_TIME_ZONE(예: +09:00)을 timezone으로 바꿉니다."""
+    offset = get_settings().db_time_zone
+    sign = -1 if offset[0] == "-" else 1
+    hours, minutes = offset[1:].split(":")
+    return timezone(sign * timedelta(hours=int(hours), minutes=int(minutes)))
+
+
+@lru_cache
+def _conversions() -> dict:
+    """DATETIME 컬럼에는 시간대가 없으므로 연결 시간대를 기준으로 읽고 씁니다.
+
+    PyMySQL은 datetime을 쓸 때 시간대를 버리므로, UTC 시각을 그대로 넘기면 9시간 어긋나게
+    저장됩니다. 그래서 쓸 때는 DB 시간대로 바꾸고, 읽을 때는 DB 시간대를 붙여 돌려줍니다.
+    """
+    tz = db_timezone()
+
+    def encode(value: datetime, mapping=None) -> str:
+        if value.tzinfo is not None:
+            value = value.astimezone(tz).replace(tzinfo=None)
+        return converters.escape_datetime(value, mapping)
+
+    def decode(raw):
+        value = converters.convert_datetime(raw)
+        return value.replace(tzinfo=tz) if isinstance(value, datetime) else value
+
+    conv = dict(converters.conversions)
+    conv[datetime] = encode
+    conv[FIELD_TYPE.DATETIME] = decode
+    conv[FIELD_TYPE.TIMESTAMP] = decode
+    return conv
 
 
 def connect() -> Connection:
@@ -36,7 +73,38 @@ def connect() -> Connection:
         autocommit=True,
         connect_timeout=5,
         init_command=f"SET time_zone = '{settings.db_time_zone}'",
+        conv=_conversions(),
     )
+
+
+def placeholders(values: Sequence) -> str:
+    """IN 절에 넣을 %s 목록입니다. 값은 따로 파라미터로 넘깁니다."""
+    return ", ".join(["%s"] * len(values))
+
+
+def fetch_all(db: Connection, sql: str, args=None) -> List[dict]:
+    with db.cursor() as cur:
+        cur.execute(sql, args)
+        return list(cur.fetchall())
+
+
+def fetch_one(db: Connection, sql: str, args=None):
+    with db.cursor() as cur:
+        cur.execute(sql, args)
+        return cur.fetchone()
+
+
+def execute(db: Connection, sql: str, args=None) -> int:
+    """바뀐 행 수를 돌려줍니다."""
+    with db.cursor() as cur:
+        return cur.execute(sql, args)
+
+
+def insert(db: Connection, sql: str, args=None) -> int:
+    """새 행의 id를 돌려줍니다."""
+    with db.cursor() as cur:
+        cur.execute(sql, args)
+        return cur.lastrowid
 
 
 def get_db() -> Iterator[Connection]:

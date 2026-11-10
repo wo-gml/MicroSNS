@@ -6,6 +6,7 @@ MySQL 테스트는 TEST_DB_USER를 지정했을 때만 실행되며 microsns_tes
 
 import os
 import tempfile
+from pathlib import Path
 
 TEST_DB_NAME = "microsns_test"
 
@@ -29,39 +30,30 @@ import pytest  # noqa: E402
 from app.config import get_settings  # noqa: E402
 from app.db import connect  # noqa: E402
 
-# 공통 기반 검증용 최소 테이블입니다. 실제 스키마는 db/01_schema.sql에서 관리합니다.
-TEST_TABLES = [
-    """CREATE TABLE member (
-        id BIGINT PRIMARY KEY AUTO_INCREMENT,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password_hash VARCHAR(255) NOT NULL,
-        name VARCHAR(50) NOT NULL,
-        bio VARCHAR(200),
-        created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
-    )""",
-    """CREATE TABLE post (
-        id BIGINT PRIMARY KEY AUTO_INCREMENT,
-        member_id BIGINT NOT NULL,
-        content VARCHAR(10) NOT NULL,
-        FOREIGN KEY (member_id) REFERENCES member (id)
-    )""",
-    """CREATE TABLE follow (
-        follower_id BIGINT NOT NULL,
-        following_id BIGINT NOT NULL,
-        PRIMARY KEY (follower_id, following_id),
-        CONSTRAINT ck_follow_not_self CHECK (follower_id <> following_id)
-    )""",
-    """CREATE TABLE recruitment (
-        id BIGINT PRIMARY KEY AUTO_INCREMENT,
-        capacity INT NOT NULL
-    )""",
-    """CREATE TABLE application (
-        id BIGINT PRIMARY KEY AUTO_INCREMENT,
-        recruitment_id BIGINT NOT NULL,
-        status ENUM('PENDING', 'APPROVED') NOT NULL DEFAULT 'PENDING'
-    )""",
+SCHEMA_FILE = Path(__file__).resolve().parents[2] / "db" / "01_schema.sql"
+
+
+def schema_statements() -> list:
+    """db/01_schema.sql을 문장 단위로 나눕니다. 주석은 모두 줄 단위(--)입니다."""
+    lines = [
+        line for line in SCHEMA_FILE.read_text().splitlines() if not line.strip().startswith("--")
+    ]
+    return [statement.strip() for statement in "\n".join(lines).split(";") if statement.strip()]
+
+
+TABLE_NAMES = [
+    "notification",
+    "application",
+    "recruitment",
+    "post_hashtag",
+    "hashtag",
+    "post_like",
+    "post_image",
+    "comment",
+    "follow",
+    "post",
+    "member",
 ]
-TABLE_NAMES = ["application", "recruitment", "follow", "post", "member"]
 
 
 @pytest.fixture(scope="session")
@@ -81,8 +73,8 @@ def mysql_schema():
             cur.execute(f"DROP DATABASE IF EXISTS {TEST_DB_NAME}")
             cur.execute(f"CREATE DATABASE {TEST_DB_NAME} CHARACTER SET utf8mb4")
             cur.execute(f"USE {TEST_DB_NAME}")
-            for ddl in TEST_TABLES:
-                cur.execute(ddl)
+            for statement in schema_statements():
+                cur.execute(statement)
         yield
     finally:
         with admin.cursor() as cur:
@@ -92,7 +84,7 @@ def mysql_schema():
 
 @pytest.fixture
 def db(mysql_schema):
-    """테이블을 비운 상태의 연결을 제공합니다."""
+    """모든 테이블을 비운 상태의 연결을 제공합니다."""
     conn = connect()
     with conn.cursor() as cur:
         cur.execute("SET FOREIGN_KEY_CHECKS = 0")

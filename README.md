@@ -8,7 +8,7 @@ MySQL 기반 미니 트위터 프로젝트입니다.
 
 ## 실행 방법
 
-1. 백엔드: [`backend/README.md`](backend/README.md)를 따라 서버를 실행합니다. DB 연결 전까지 API는 메모리의 예시 데이터를 쓰므로 MySQL이 없어도 됩니다.
+1. DB와 백엔드: [`backend/README.md`](backend/README.md)를 따라 MySQL에 테이블을 만들고 서버를 실행합니다.
 2. 프론트엔드:
 
    ```bash
@@ -18,25 +18,20 @@ MySQL 기반 미니 트위터 프로젝트입니다.
    npm run dev
    ```
 
-   http://localhost:3000 에서 `admin@test.com` / `test1234` 로 로그인합니다.
+   http://localhost:3000 에서 회원가입한 뒤 사용합니다.
 
 API 문서(Swagger)는 백엔드를 실행한 뒤 http://localhost:8000/docs 에서 봅니다.
 
-### 백엔드 없이 화면 확인하기
+## DB 파일
 
-FastAPI 없이 Node 목 서버로 프론트엔드만 실행합니다.
+SQL은 모두 `db/`에 둡니다.
 
-```bash
-cd frontend
-npm install
-npm run dev:mock
-```
+| 위치 | 내용 |
+| --- | --- |
+| `db/01_schema.sql` | 테이블, 제약 조건, 인덱스 (ERD: [`docs/erd/erd.png`](docs/erd/erd.png)) |
+| `db/seed/<테이블 영역>.sql` | 예시 데이터. 테이블 담당자가 파일을 나눠 관리합니다. 예: `db/seed/members.sql`, `db/seed/posts.sql` |
 
-http://localhost:3000 에서 `admin@test.com` / `test1234` 로 로그인합니다.
-
-- 데이터는 메모리에만 있어 서버를 끄면 처음 상태로 돌아갑니다.
-- 목 서버는 권한과 모집 규칙을 검사하지 않으므로, 동작 확인은 FastAPI로 합니다.
-- 다른 포트를 쓰려면 `npm run dev:mock -- -p 3001`처럼 실행합니다. 목 API 포트(기본 8765)는 `MOCK_PORT`로 바꿉니다.
+실행 순서는 [`backend/README.md`](backend/README.md)의 실행 1단계를 따릅니다.
 
 ## 팀원 역할
 

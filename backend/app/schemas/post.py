@@ -7,7 +7,7 @@ from app.schemas.recruitment import RecruitmentCreate, RecruitmentOut
 from app.schemas.user import UserSummary
 
 # 외부 주소를 글에 넣지 못하도록 이 서버가 제공하는 사진만 허용합니다.
-ImageUrl = Annotated[str, StringConstraints(pattern=r"^/api/(uploads|mock-photos)/[\w-]+\.\w+$")]
+ImageUrl = Annotated[str, StringConstraints(pattern=r"^/api/uploads/[\w-]+\.\w+$")]
 
 
 class PostCreate(BaseModel):

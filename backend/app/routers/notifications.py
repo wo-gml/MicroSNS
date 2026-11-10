@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from app.mock import store
-from app.mock.deps import LoginUser
+from app.deps import DbConn, LoginUser
 from app.pagination import PageQuery, PageResponse
+from app.repositories import notification_repo
 from app.schemas.error import errors
 from app.schemas.notification import NotificationOut, UnreadCount
 
@@ -15,8 +15,8 @@ router = APIRouter(prefix="/notifications", tags=["알림"])
     summary="알림 목록 조회",
     responses=errors(401, 422),
 )
-def list_notifications(user: LoginUser, page: PageQuery):
-    rows = store.list_notifications(user.id, limit=page.fetch_limit, offset=page.offset)
+def list_notifications(db: DbConn, user: LoginUser, page: PageQuery):
+    rows = notification_repo.list_for(db, user.id, limit=page.fetch_limit, offset=page.offset)
     return PageResponse.from_rows(rows, page)
 
 
@@ -26,8 +26,8 @@ def list_notifications(user: LoginUser, page: PageQuery):
     summary="안 읽은 알림 수 조회",
     responses=errors(401),
 )
-def unread_count(user: LoginUser):
-    return {"count": store.unread_count(user.id)}
+def unread_count(db: DbConn, user: LoginUser):
+    return {"count": notification_repo.unread_count(db, user.id)}
 
 
 @router.post(
@@ -37,5 +37,5 @@ def unread_count(user: LoginUser):
     description="내 알림만 처리합니다.",
     responses=errors(401, 422),
 )
-def mark_read(notification_id: int, user: LoginUser):
-    store.mark_read(notification_id, user.id)
+def mark_read(notification_id: int, db: DbConn, user: LoginUser):
+    notification_repo.mark_read(db, notification_id, user.id)

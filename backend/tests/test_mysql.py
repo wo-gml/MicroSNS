@@ -32,6 +32,29 @@ def add_member(conn, email="a@example.com"):
     )
 
 
+def add_recruitment(conn, capacity):
+    """모집 글 작성자와 글, 모집을 만들고 모집 id를 돌려줍니다."""
+    author_id = add_member(conn, "author@example.com")
+    post_id = execute(
+        conn, "INSERT INTO post (member_id, content) VALUES (%s, '모집')", (author_id,)
+    )
+    return execute(
+        conn,
+        "INSERT INTO recruitment (post_id, type, capacity, deadline) "
+        "VALUES (%s, 'study', %s, NOW(6) + INTERVAL 1 DAY)",
+        (post_id, capacity),
+    )
+
+
+def add_application(conn, recruitment_id, n, status="pending"):
+    member_id = add_member(conn, f"applicant{n}@example.com")
+    return execute(
+        conn,
+        "INSERT INTO application (recruitment_id, member_id, status) VALUES (%s, %s, %s)",
+        (recruitment_id, member_id, status),
+    )
+
+
 @pytest.fixture
 def client(db):
     router = APIRouter()
@@ -50,7 +73,7 @@ def client(db):
 
     @router.post("/follows")
     def add_follow(a: int, b: int, conn: DbConn):
-        execute(conn, "INSERT INTO follow VALUES (%s, %s)", (a, b))
+        execute(conn, "INSERT INTO follow (follower_id, following_id) VALUES (%s, %s)", (a, b))
 
     @router.delete("/members/{member_id}")
     def remove(member_id: int, conn: DbConn):
@@ -120,30 +143,23 @@ def test_autocommit_is_restored_after_transaction(db):
 
 def test_lock_sees_data_committed_after_an_earlier_read(db):
     """로그인 확인처럼 먼저 읽은 쿼리가 있어도 트랜잭션은 최신 데이터를 봐야 합니다."""
-    recruitment_id = execute(db, "INSERT INTO recruitment (capacity) VALUES (1)")
+    recruitment_id = add_recruitment(db, 1)
     assert scalar(db, "SELECT COUNT(*) FROM application") == 0
 
     other = connect()
     try:
-        execute(
-            other,
-            "INSERT INTO application (recruitment_id, status) VALUES (%s, 'APPROVED')",
-            (recruitment_id,),
-        )
+        add_application(other, recruitment_id, 1, status="accepted")
     finally:
         other.close()
 
     with transaction(db):
         scalar(db, "SELECT capacity FROM recruitment WHERE id = %s FOR UPDATE", (recruitment_id,))
-        assert scalar(db, "SELECT COUNT(*) FROM application WHERE status = 'APPROVED'") == 1
+        assert scalar(db, "SELECT COUNT(*) FROM application WHERE status = 'accepted'") == 1
 
 
 def test_row_lock_prevents_exceeding_capacity_under_concurrency(db):
-    recruitment_id = execute(db, "INSERT INTO recruitment (capacity) VALUES (2)")
-    application_ids = [
-        execute(db, "INSERT INTO application (recruitment_id) VALUES (%s)", (recruitment_id,))
-        for _ in range(8)
-    ]
+    recruitment_id = add_recruitment(db, 2)
+    application_ids = [add_application(db, recruitment_id, n) for n in range(8)]
     barrier = Barrier(len(application_ids))
     failures = []
 
@@ -161,13 +177,13 @@ def test_row_lock_prevents_exceeding_capacity_under_concurrency(db):
                     approved = scalar(
                         conn,
                         "SELECT COUNT(*) FROM application "
-                        "WHERE recruitment_id = %s AND status = 'APPROVED'",
+                        "WHERE recruitment_id = %s AND status = 'accepted'",
                         (recruitment_id,),
                     )
                     if approved < capacity:
                         execute(
                             conn,
-                            "UPDATE application SET status = 'APPROVED' WHERE id = %s",
+                            "UPDATE application SET status = 'accepted' WHERE id = %s",
                             (application_id,),
                         )
             finally:
@@ -182,7 +198,7 @@ def test_row_lock_prevents_exceeding_capacity_under_concurrency(db):
         thread.join()
 
     assert failures == []
-    assert scalar(db, "SELECT COUNT(*) FROM application WHERE status = 'APPROVED'") == 2
+    assert scalar(db, "SELECT COUNT(*) FROM application WHERE status = 'accepted'") == 2
 
 
 def test_duplicate_row_returns_409(client):
@@ -206,7 +222,7 @@ def test_check_constraint_returns_400(client):
 
 def test_too_long_value_returns_400(client, db):
     member_id = add_member(db)
-    response = client.post("/test-posts", params={"member_id": member_id, "content": "x" * 11})
+    response = client.post("/test-posts", params={"member_id": member_id, "content": "x" * 501})
     assert response.status_code == 400
 
 
