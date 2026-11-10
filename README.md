@@ -22,22 +22,6 @@ MySQL 기반 미니 트위터 프로젝트입니다.
 
 API 문서(Swagger)는 백엔드를 실행한 뒤 http://localhost:8000/docs 에서 봅니다.
 
-### 백엔드 없이 화면 확인하기
-
-FastAPI 없이 Node 목 서버로 프론트엔드만 실행합니다.
-
-```bash
-cd frontend
-npm install
-npm run dev:mock
-```
-
-http://localhost:3000 에서 `admin@test.com` / `test1234` 로 로그인합니다.
-
-- 데이터는 메모리에만 있어 서버를 끄면 처음 상태로 돌아갑니다.
-- 목 서버는 권한과 모집 규칙을 검사하지 않으므로, 동작 확인은 FastAPI로 합니다.
-- 다른 포트를 쓰려면 `npm run dev:mock -- -p 3001`처럼 실행합니다. 목 API 포트(기본 8765)는 `MOCK_PORT`로 바꿉니다.
-
 ## 팀원 역할
 
 | 이름 | 역할 |

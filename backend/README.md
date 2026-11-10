@@ -18,6 +18,12 @@ FastAPI + MySQL. ORM 없이 `repositories/`에 SQL을 직접 작성합니다.
    mysql -u root -p microsns < db/01_schema.sql
    ```
 
+   예시 데이터(아래 예시 계정, 글, 모집, 알림)를 넣습니다.
+
+   ```bash
+   mysql -u root -p microsns < db/02_seed.sql
+   ```
+
 2. 패키지를 설치합니다. (Windows는 `.venv\Scripts\activate`)
 
    ```bash
@@ -47,7 +53,7 @@ FastAPI + MySQL. ORM 없이 `repositories/`에 SQL을 직접 작성합니다.
 
 ## 예시 계정
 
-비밀번호는 모두 `test1234`입니다. 프론트엔드의 `npm run dev:mock`과 같은 예시 데이터입니다.
+비밀번호는 모두 `test1234`입니다. 메모리 저장소(`app/mock/data.py`)와 `db/02_seed.sql`에 같은 예시 데이터가 들어 있습니다.
 
 | 이메일 | 이름 |
 | --- | --- |
