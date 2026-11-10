@@ -12,6 +12,12 @@ FastAPI + MySQL. ORM 없이 `repositories/`에 SQL을 직접 작성합니다.
    CREATE DATABASE microsns CHARACTER SET utf8mb4;
    ```
 
+   레포 루트에서 ERD의 11개 테이블을 만듭니다. 기존 테이블을 지우고 다시 만드므로 데이터도 사라집니다.
+
+   ```bash
+   mysql -u root -p microsns < db/01_schema.sql
+   ```
+
 2. 패키지를 설치합니다. (Windows는 `.venv\Scripts\activate`)
 
    ```bash
@@ -55,7 +61,7 @@ FastAPI + MySQL. ORM 없이 `repositories/`에 SQL을 직접 작성합니다.
 3. 라우터의 `app.mock.deps` import를 `app.deps`로 바꿉니다.
 4. 모든 라우터를 바꾸면 `app/mock/`과 `app/main.py`의 `serialize_requests`, `/mock-photos` 설정을 지웁니다.
 
-확인된 차이: ERD 초안(`microsns.dbml`, 레포에는 없음)은 enum이 대문자이고 `application.status`에 `APPROVED`, `CANCELED`를 씁니다. 현재 API와 프론트엔드는 소문자 `accepted`를 쓰고 취소 시 행을 지우므로, 스키마를 확정할 때 맞춰야 합니다.
+`db/01_schema.sql`의 enum 값은 API와 같은 소문자(`pending`, `accepted`, `rejected` 등)입니다. 지원 취소는 상태를 바꾸지 않고 행을 지웁니다. 글을 지우면 딸린 행이 DB에서 함께 지워지므로(ON DELETE CASCADE) `delete_post`는 `DELETE FROM post` 한 줄이면 됩니다.
 
 ## 테스트
 
