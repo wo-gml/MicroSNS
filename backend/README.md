@@ -18,11 +18,13 @@ FastAPI + MySQL. ORM 없이 `repositories/`에 SQL을 직접 작성합니다.
    mysql -u root -p microsns < db/01_schema.sql
    ```
 
-   예시 데이터(아래 예시 계정, 글, 모집, 알림)를 넣습니다.
+   예시 데이터는 테이블 담당자가 `backend/<영역>/seed_*.sql`로 나눠 관리합니다. 참조 순서대로 회원부터 넣습니다.
 
    ```bash
-   mysql -u root -p microsns < db/02_seed.sql
+   mysql -u root -p microsns < backend/members/seed_members.sql
    ```
+
+   시드의 회원은 비밀번호 해시가 예시 문자열이라 로그인할 수 없습니다. 로그인은 아래 메모리 저장소의 예시 계정으로 확인합니다.
 
 2. 패키지를 설치합니다. (Windows는 `.venv\Scripts\activate`)
 
@@ -53,7 +55,7 @@ FastAPI + MySQL. ORM 없이 `repositories/`에 SQL을 직접 작성합니다.
 
 ## 예시 계정
 
-비밀번호는 모두 `test1234`입니다. 메모리 저장소(`app/mock/data.py`)와 `db/02_seed.sql`에 같은 예시 데이터가 들어 있습니다.
+비밀번호는 모두 `test1234`입니다. 메모리 저장소(`app/mock/data.py`)의 예시 데이터이며, DB 시드(`backend/*/seed_*.sql`)의 회원과는 다릅니다.
 
 | 이메일 | 이름 |
 | --- | --- |

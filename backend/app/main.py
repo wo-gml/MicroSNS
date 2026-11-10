@@ -31,7 +31,7 @@ API_DESCRIPTION = """
 - **목록:** `limit`, `offset`으로 조회하고, `has_more`로 다음 페이지가 있는지 알려 줍니다.
 """
 
-# 예시 글의 사진. app/mock/data.py와 db/02_seed.sql의 예시 글이 씁니다.
+# 예시 글의 사진. app/mock/data.py의 예시 글이 씁니다.
 MOCK_PHOTOS_DIR = BACKEND_DIR.parent / "frontend" / "mock" / "photos"
 
 
