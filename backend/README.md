@@ -22,7 +22,10 @@ FastAPI + MySQL. ORM 없이 `repositories/`에 SQL을 직접 작성합니다.
 
    ```bash
    mysql -u root -p microsns < db/seed/members.sql
+   mysql -u root -p microsns < db/seed/posts.sql
    ```
+
+   게시글 시드는 회원 id 1~5를 작성자로 씁니다. 빈 테이블에 회원 시드를 먼저 넣어야 id가 맞습니다.
 
    시드의 회원은 비밀번호 해시가 예시 문자열이라 로그인할 수 없습니다. 화면을 확인할 때는 회원가입으로 계정을 만듭니다.
 
