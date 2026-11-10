@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
+from app.deps import DbConn, OptionalUser
 from app.errors import NotFoundError
-from app.mock import store
-from app.mock.deps import OptionalUser
 from app.pagination import PageQuery, PageResponse
+from app.repositories import post_repo, user_repo
 from app.schemas.error import errors
 from app.schemas.post import PostOut
 from app.schemas.user import UserProfile
@@ -11,11 +11,9 @@ from app.schemas.user import UserProfile
 router = APIRouter(prefix="/users", tags=["회원"])
 
 
-def _get_user(user_id: int) -> dict:
-    user = store.find_user(user_id)
-    if user is None:
+def _require_user(db: DbConn, user_id: int) -> None:
+    if not user_repo.exists(db, user_id):
         raise NotFoundError("회원을 찾을 수 없습니다.")
-    return user
 
 
 @router.get(
@@ -24,8 +22,11 @@ def _get_user(user_id: int) -> dict:
     summary="프로필 조회",
     responses=errors(404, 422),
 )
-def get_user(user_id: int, viewer: OptionalUser):
-    return store.user_profile(_get_user(user_id), viewer.id if viewer else None)
+def get_user(user_id: int, db: DbConn, viewer: OptionalUser):
+    profile = user_repo.profile(db, user_id, viewer.id if viewer else None)
+    if profile is None:
+        raise NotFoundError("회원을 찾을 수 없습니다.")
+    return profile
 
 
 @router.get(
@@ -34,10 +35,10 @@ def get_user(user_id: int, viewer: OptionalUser):
     summary="회원이 쓴 글 조회",
     responses=errors(404, 422),
 )
-def get_user_posts(user_id: int, viewer: OptionalUser, page: PageQuery):
-    _get_user(user_id)
-    rows = store.posts_by_author(
-        user_id, viewer.id if viewer else None, limit=page.fetch_limit, offset=page.offset
+def get_user_posts(user_id: int, db: DbConn, viewer: OptionalUser, page: PageQuery):
+    _require_user(db, user_id)
+    rows = post_repo.by_author(
+        db, user_id, viewer.id if viewer else None, limit=page.fetch_limit, offset=page.offset
     )
     return PageResponse.from_rows(rows, page)
 
@@ -48,9 +49,9 @@ def get_user_posts(user_id: int, viewer: OptionalUser, page: PageQuery):
     summary="회원이 좋아요한 글 조회",
     responses=errors(404, 422),
 )
-def get_user_likes(user_id: int, viewer: OptionalUser, page: PageQuery):
-    _get_user(user_id)
-    rows = store.posts_liked_by(
-        user_id, viewer.id if viewer else None, limit=page.fetch_limit, offset=page.offset
+def get_user_likes(user_id: int, db: DbConn, viewer: OptionalUser, page: PageQuery):
+    _require_user(db, user_id)
+    rows = post_repo.liked_by(
+        db, user_id, viewer.id if viewer else None, limit=page.fetch_limit, offset=page.offset
     )
     return PageResponse.from_rows(rows, page)

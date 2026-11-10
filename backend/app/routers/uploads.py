@@ -5,7 +5,7 @@ from fastapi import APIRouter, UploadFile
 
 from app.config import get_settings
 from app.errors import BadRequestError
-from app.mock.deps import LoginUser
+from app.deps import LoginUser
 from app.schemas.error import errors
 from app.schemas.post import UploadOut
 
