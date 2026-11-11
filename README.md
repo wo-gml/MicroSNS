@@ -32,7 +32,6 @@
 - 인증: JWT 쿠키, 비밀번호는 Argon2로 해싱
 - 테스트: pytest
 
-ORM은 쓰지 않고 SQL을 `backend/app/repositories/`에 직접 작성했다. 프론트에서 `/api/*`로 보내는 요청은 Next.js가 FastAPI로 넘겨주기 때문에 CORS 설정은 따로 하지 않아도 된다.
 
 ## DB 설계
 
