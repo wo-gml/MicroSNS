@@ -139,7 +139,7 @@ npm run dev
 
 http://localhost:3000 에 접속해서 회원가입하면 된다.
 
-테스트 실행 방법과 백엔드 코드 규칙은 [`backend/README.md`](backend/README.md)에 정리했다.
+테스트 실행 방법과 백엔드 코드 규칙은 [`backend/README.md`](backend/README.md)에 정리했다. 서버에 배포하는 방법은 [`deploy/README.md`](deploy/README.md)에 있다.
 
 ## 폴더 구조
 
@@ -166,6 +166,7 @@ http://localhost:3000 에 접속해서 회원가입하면 된다.
 ├── db/
 │   ├── 01_schema.sql        # 테이블 생성
 │   └── seed/                # 예시 데이터 (테이블 담당자별로 파일 분리)
+├── deploy/                  # 오라클 클라우드 서버 배포 스크립트와 설정
 └── docs/
     ├── erd/erd.png
     ├── requirements.md      # 기능 명세

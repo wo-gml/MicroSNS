@@ -1,0 +1,15 @@
+# setup.sh가 __APP_DIR__, __APP_USER__를 채워 /etc/systemd/system/에 복사한다.
+[Unit]
+Description=microSNS frontend (Next.js)
+After=network.target microsns-backend.service
+
+[Service]
+User=__APP_USER__
+WorkingDirectory=__APP_DIR__/frontend
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/env npm run start -- -H 127.0.0.1 -p 3000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
